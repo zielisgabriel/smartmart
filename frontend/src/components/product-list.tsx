@@ -127,10 +127,10 @@ export function ProductList({
             </div>
           </div>
 
+          {/* <ProductFilters categories={categories} /> */}
           {/* <Separator className="my-4" />
 
           <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-            <ProductFilters categories={categories} />
             <SearchProduct />
           </div> */}
         </CardHeader>
