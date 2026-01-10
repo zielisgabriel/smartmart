@@ -45,16 +45,3 @@ export async function updateProduct(data: UpdateProductData) {
   revalidateTag("products", { expire: 0 })
   return response.json()
 }
-
-export async function deleteProduct(id: number) {
-  const response = await fetch(`${API_URL}/api/products/${id}`, {
-    method: "DELETE",
-  })
-
-  if (!response.ok) {
-    throw new Error("Erro ao deletar produto")
-  }
-
-  revalidateTag("products", { expire: 0 })
-  revalidateTag("sales", { expire: 0 })
-}
