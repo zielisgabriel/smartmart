@@ -4,7 +4,7 @@ import { fetchClient } from "@/lib/fetch-client";
 import { revalidateTag } from "next/cache";
 
 export async function deleteProductService(productId: number) {
-  const response = await fetchClient({
+  await fetchClient({
     path: `/api/products/${productId}`,
     init: {
       method: "DELETE"
