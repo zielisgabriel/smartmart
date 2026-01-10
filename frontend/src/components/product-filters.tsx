@@ -41,7 +41,6 @@ export function ProductFilters({ categories }: ProductFiltersProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  // Estados locais para os filtros (antes de aplicar)
   const [sortField, setSortField] = useState<SortField>(
     (searchParams.get("sortBy") as SortField) || ""
   );
@@ -53,7 +52,6 @@ export function ProductFilters({ categories }: ProductFiltersProps) {
     return cats ? cats.split(",").map(Number) : [];
   });
 
-  // Estados aplicados (para mostrar badges)
   const [appliedFilters, setAppliedFilters] = useState<{
     sortField: SortField;
     sortOrder: SortOrder;
@@ -69,10 +67,6 @@ export function ProductFilters({ categories }: ProductFiltersProps) {
   const hasActiveFilters =
     appliedFilters.sortField !== "" || appliedFilters.categories.length > 0;
 
-  const activeFilterCount =
-    (appliedFilters.sortField ? 1 : 0) +
-    (appliedFilters.categories.length > 0 ? 1 : 0);
-
   const handleCategoryToggle = (categoryId: number) => {
     setSelectedCategories((prev) =>
       prev.includes(categoryId)
@@ -84,10 +78,8 @@ export function ProductFilters({ categories }: ProductFiltersProps) {
   const applyFilters = useCallback(() => {
     const params = new URLSearchParams(searchParams.toString());
 
-    // Resetar para página 0 ao aplicar filtros
     params.delete("page");
 
-    // Aplicar ordenação
     if (sortField) {
       params.set("sortBy", sortField);
       params.set("sortOrder", sortOrder);
@@ -96,14 +88,12 @@ export function ProductFilters({ categories }: ProductFiltersProps) {
       params.delete("sortOrder");
     }
 
-    // Aplicar categorias
     if (selectedCategories.length > 0) {
       params.set("categories", selectedCategories.join(","));
     } else {
       params.delete("categories");
     }
 
-    // Atualizar estados aplicados
     setAppliedFilters({
       sortField,
       sortOrder,
