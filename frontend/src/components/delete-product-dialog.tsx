@@ -1,10 +1,8 @@
 "use client"
 
 import { useState } from "react"
-import { Trash2, Loader2, AlertTriangle } from "lucide-react"
+import { Trash2, AlertTriangle } from "lucide-react"
 import { toast } from "sonner"
-
-import { deleteProduct } from "@/actions/product-actions"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -24,6 +22,8 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip"
 import { Product } from "@/types/product"
+import { Spinner } from "./ui/spinner"
+import { deleteProductService } from "@/services/delete-product-service"
 
 interface DeleteProductDialogProps {
   product: Product;
@@ -34,21 +34,21 @@ export function DeleteProductDialog({
   product,
   onProductDeleted,
 }: DeleteProductDialogProps) {
-  const [open, setOpen] = useState(false)
+  const [dialogOpen, setDialogOpen] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
 
   const handleDelete = async () => {
     setIsDeleting(true)
 
     try {
-      await deleteProduct(product.id)
+      await deleteProductService(product.id);
 
       toast.success("Produto removido com sucesso!", {
         description: `${product.name} foi removido do catálogo.`,
-      })
+      });
 
-      setOpen(false)
-      onProductDeleted?.()
+      setDialogOpen(false);
+      onProductDeleted?.();
     } catch (error) {
       toast.error("Erro ao excluir produto", {
         description: error instanceof Error ? error.message : "Tente novamente.",
@@ -59,15 +59,15 @@ export function DeleteProductDialog({
   }
 
   return (
-    <AlertDialog open={open} onOpenChange={setOpen}>
+    <AlertDialog open={dialogOpen} onOpenChange={setDialogOpen}>
       <TooltipProvider>
         <Tooltip>
           <TooltipTrigger asChild>
             <AlertDialogTrigger asChild>
               <Button
-                variant="ghost"
+                variant="destructive"
                 size="icon"
-                className="h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10"
+                className="h-8 w-8"
               >
                 <Trash2 className="h-4 w-4" />
                 <span className="sr-only">Excluir produto</span>
@@ -117,19 +117,22 @@ export function DeleteProductDialog({
           <AlertDialogAction
             onClick={handleDelete}
             disabled={isDeleting}
-            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            className="bg-destructive hover:bg-destructive/80"
+            asChild
           >
-            {isDeleting ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Excluindo...
-              </>
-            ) : (
-              <>
-                <Trash2 className="mr-2 h-4 w-4" />
-                Excluir Produto
-              </>
-            )}
+            <Button variant={"destructive"}>
+              {isDeleting ? (
+                <>
+                  <Spinner />
+                  Excluindo...
+                </>
+              ) : (
+                <>
+                  <Trash2 className="h-4 w-4" />
+                  Excluir Produto
+                </>
+              )}
+            </Button>
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
