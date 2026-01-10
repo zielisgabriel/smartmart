@@ -1,7 +1,7 @@
 "use cache";
 
 import { cacheTag } from "next/cache";
-import { SaleResponse, SaleStats } from "@/types/sale-response";
+import { SaleResponse } from "@/types/sale-response";
 
 const API_URL = "http://localhost:5000";
 
@@ -27,7 +27,7 @@ export async function getSalesService(params: GetSalesParams): Promise<SaleRespo
   return response.json();
 }
 
-export async function getSalesStatsService(): Promise<SaleStats> {
+export async function getSalesStatsService() {
   cacheTag("sales");
 
   const response = await fetch(`${API_URL}/api/sales/stats`);
