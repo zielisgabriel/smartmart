@@ -1,0 +1,3 @@
+from repositories.category_repository import CategoryRepository
+from repositories.product_repository import ProductRepository
+from repositories.sale_repository import SaleRepository
