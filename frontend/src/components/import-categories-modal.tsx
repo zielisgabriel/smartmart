@@ -36,16 +36,12 @@ export function ImportCategoriesModal({ open, onOpenChange }: { open: boolean; o
     try {
       const result = await importCategories(formData)
 
-      toast.success("Categorias importadas com sucesso!", {
-        description: `${result.imported} categorias foram importadas.`,
-      })
+      toast.success("Categorias importadas com sucesso!")
 
       setFile(null)
       onOpenChange(false)
     } catch (error) {
-      toast.error("Erro ao importar categorias", {
-        description: error instanceof Error ? error.message : "Verifique o formato do arquivo.",
-      })
+      toast.error("Erro ao importar categorias")
     } finally {
       setIsSubmitting(false)
     }
