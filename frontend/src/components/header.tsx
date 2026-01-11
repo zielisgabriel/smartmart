@@ -29,7 +29,7 @@ export function Header() {
             </Link>
           </Button>
 
-          <nav className="hidden md:flex items-center gap-1">
+          <nav className="flex items-center gap-1">
             {navItems.map((item) => {
               const isActive = pathname === item.href;
               return (
@@ -45,7 +45,7 @@ export function Header() {
                 >
                   <Link href={item.href}>
                     <item.icon className="h-4 w-4" />
-                    {item.label}
+                    <span className="hidden sm:inline">{item.label}</span>
                   </Link>
                 </Button>
               );
