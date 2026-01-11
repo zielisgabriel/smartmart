@@ -59,3 +59,39 @@ class SaleRepository:
         except Exception:
             db.session.rollback()
             raise
+
+    def get_monthly_stats(self, year: int):
+        from sqlalchemy import extract
+        
+        results = db.session.query(
+            extract('month', Sale.date).label('month'),
+            func.sum(Sale.quantity).label('total_quantity'),
+            func.sum(Sale.total_price).label('total_revenue'),
+            func.count(Sale.id).label('sales_count')
+        ).filter(
+            extract('year', Sale.date) == year
+        ).group_by(
+            extract('month', Sale.date)
+        ).order_by(
+            extract('month', Sale.date)
+        ).all()
+        
+        monthly_data = []
+        for month in range(1, 13):
+            month_result = next((r for r in results if int(r.month) == month), None)
+            if month_result:
+                monthly_data.append({
+                    "month": month,
+                    "total_quantity": int(month_result.total_quantity),
+                    "total_revenue": float(month_result.total_revenue),
+                    "sales_count": int(month_result.sales_count)
+                })
+            else:
+                monthly_data.append({
+                    "month": month,
+                    "total_quantity": 0,
+                    "total_revenue": 0.0,
+                    "sales_count": 0
+                })
+        
+        return monthly_data
