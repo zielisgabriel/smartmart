@@ -24,10 +24,12 @@ export function HeaderNavigation() {
           <DropdownMenuTrigger asChild>
             <Button variant={"ghost"} size={"sm"}>
               <FileDownIcon size={14} />
-              Importar
-              <Badge className="text-[10px] font-bold bg-green-800">
-                CSV
-              </Badge>
+              <span className="hidden sm:flex items-center gap-1">
+                Importar
+                <Badge className="text-[10px] font-bold bg-green-800">
+                  CSV
+                </Badge>
+              </span>
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
@@ -36,18 +38,18 @@ export function HeaderNavigation() {
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem
-              className="w-full justify-start"
-              onClick={() => openModal("products")}
-            >
-              <ShoppingBasketIcon className="h-4 w-4" />
-              Lista de produtos
-            </DropdownMenuItem>
-            <DropdownMenuItem
               className="w-full"
               onClick={() => openModal("categories")}
             >
               <ChartBarStackedIcon className="h-4 w-4" />
               Categorias
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              className="w-full justify-start"
+              onClick={() => openModal("products")}
+            >
+              <ShoppingBasketIcon className="h-4 w-4" />
+              Lista de produtos
             </DropdownMenuItem>
             <DropdownMenuItem
               className="w-full justify-start"
