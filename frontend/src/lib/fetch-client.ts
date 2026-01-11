@@ -3,7 +3,7 @@
 interface FetchClientProps {
   path: string,
   host?: string,
-  init: RequestInit
+  init?: RequestInit
 }
 
 export async function fetchClient({ path, host, init }: FetchClientProps) {
