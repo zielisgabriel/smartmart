@@ -1,9 +1,9 @@
 import { useCallback, useState } from "react"
 import { Dialog, DialogContent, DialogTitle, DialogHeader, DialogFooter, DialogDescription } from "./ui/dialog"
-import { CheckCircle2Icon, FileDownIcon, HistoryIcon, TagIcon, UploadIcon, Loader2 } from "lucide-react"
+import { CheckCircle2Icon, HistoryIcon, TagIcon, UploadIcon, Loader2 } from "lucide-react"
 import { Button } from "./ui/button"
 import { toast } from "sonner"
-import { importSales } from "@/actions/import-actions"
+import { importSalesService } from "@/services/import-sales-service"
 
 export function ImportSalesHistoryModal({ open, onOpenChange }: { open: boolean; onOpenChange: (open: boolean) => void }) {
   const [isDragging, setIsDragging] = useState(false);
@@ -27,27 +27,25 @@ export function ImportSalesHistoryModal({ open, onOpenChange }: { open: boolean;
   }, [])
 
   const handleSubmit = async () => {
-    if (!file) return
-    setIsSubmitting(true)
+    if (!file) return;
+    setIsSubmitting(true);
 
-    const formData = new FormData()
-    formData.append("file", file)
+    const formData = new FormData();
+    formData.append("file", file);
 
     try {
-      const result = await importSales(formData)
+      await importSalesService(formData);
 
-      toast.success("Vendas importadas com sucesso!", {
-        description: `${result.imported} vendas foram importadas.`,
-      })
+      toast.success("Vendas importadas com sucesso!");
 
-      setFile(null)
-      onOpenChange(false)
+      setFile(null);
+      onOpenChange(false);
     } catch (error) {
       toast.error("Erro ao importar vendas", {
         description: error instanceof Error ? error.message : "Verifique o formato do arquivo.",
       })
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
   }
 
