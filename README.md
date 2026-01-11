@@ -12,7 +12,7 @@ Sistema completo para gerenciamento de produtos, categorias e histórico de vend
 - **PostgreSQL 17** - Banco de dados
 - **psycopg 3.3.2** - Driver PostgreSQL
 - **pandas 2.3.3** - Manipulação de dados CSV
-- **
+- **python-dotenv 1.2.1** - Variável de ambiente
 
 ### Frontend
 - **Next.js 16.1.1**
