@@ -18,10 +18,6 @@ async function ProductsContent({ searchParams }: ProductsPageProps) {
   const params = await searchParams
   const productsPromise = getProductsService({
     page: params.page ?? null,
-    sortBy: params.sortBy ?? null,
-    sortOrder: params.sortOrder ?? null,
-    categories: params.categories ?? null,
-    search: params.search ?? null,
   })
   const categoriesPromise = getCategoriesService()
 
