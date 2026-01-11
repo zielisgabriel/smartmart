@@ -1,43 +1,52 @@
 from database import db
 from entities.product import Product
-
+from sqlalchemy import desc
+from decimal import Decimal
 
 class ProductRepository:
-    def find_all(self, page=1, size=10, sort_by="id", sort_order="asc", category_ids=None, search=None):
+    def find_all(
+        self,
+        page=1,
+        size=10
+    ):
         query = Product.query
 
-        if category_ids:
-            query = query.filter(Product.category_id.in_(category_ids))
-
-        if search:
-            query = query.filter(Product.name.ilike(f"%{search}%"))
-
-        order_column = getattr(Product, sort_by, Product.id)
-        if sort_order == "desc":
-            order_column = order_column.desc()
-
         total = query.count()
-        products = query.order_by(order_column).offset((page - 1) * size).limit(size).all()
+        products = query.order_by(desc(Product.price)).offset((page - 1) * size).limit(size).all()
 
         return products, total
 
     def find_by_id(self, product_id):
         return Product.query.get(product_id)
 
-    def create(self, name, description, price, brand, category_id):
+    def create(
+        self,
+        name: str,
+        description: str,
+        price: Decimal,
+        brand: str,
+        category_id: int
+    ):
         product = Product(
-            name=name,
-            description=description,
-            price=price,
-            brand=brand,
-            category_id=category_id,
+            name = name,
+            description = description,
+            price = price,
+            brand = brand,
+            category_id = category_id
         )
         db.session.add(product)
         db.session.commit()
         return product
 
-    def update(self, product_id, name, description, price, brand, category_id):
-        product = self.find_by_id(product_id)
+    def update(self,
+        id: int,
+        name: str,
+        description: str,
+        price: Decimal,
+        brand: str,
+        category_id: int
+    ):
+        product = self.find_by_id(id)
         if not product:
             return None
         product.name = name
@@ -48,7 +57,10 @@ class ProductRepository:
         db.session.commit()
         return product
 
-    def delete(self, product_id):
+    def delete(
+        self,
+        product_id: int
+    ):
         product = self.find_by_id(product_id)
         if not product:
             return False
@@ -56,7 +68,10 @@ class ProductRepository:
         db.session.commit()
         return True
 
-    def bulk_create(self, products_data):
+    def bulk_create(
+        self,
+        products_data
+    ):
         try:
             created = []
             for data in products_data:
