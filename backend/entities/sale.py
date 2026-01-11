@@ -1,15 +1,14 @@
-from datetime import datetime
 from database import db
-
+from sqlalchemy import Column, Integer, DECIMAL, Date
 
 class Sale(db.Model):
     __tablename__ = "sales"
 
-    id = db.Column(db.Integer, primary_key=True)
-    product_id = db.Column(db.Integer, db.ForeignKey("products.id"), nullable=False)
-    quantity = db.Column(db.Integer, nullable=False)
-    total_price = db.Column(db.Float, nullable=False)
-    date = db.Column(db.DateTime, nullable=False)
+    id = Column(Integer, primary_key=True)
+    product_id = Column(Integer, db.ForeignKey("products.id"), nullable=False)
+    quantity = Column(Integer, nullable=False)
+    total_price = Column(DECIMAL, nullable=False)
+    date = Column(Date, nullable=False)
 
     product = db.relationship("Product", back_populates="sales")
 
