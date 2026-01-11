@@ -38,6 +38,7 @@ import { AddProductModal } from "./add-product-modal";
 import { EditProductModal } from "./edit-product-modal";
 import { DeleteProductDialog } from "./delete-product-dialog";
 import { ProductFilters } from "./product-filters";
+import { ExportButton } from "./export-button";
 
 interface ProductListProps {
   productsPromise: Promise<ProductResponse>;
@@ -123,6 +124,7 @@ export function ProductList({
             </div>
 
             <div className="flex items-center gap-2">
+              <ExportButton type="products" />
               <AddProductModal categories={categories} />
             </div>
           </div>
