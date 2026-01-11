@@ -86,19 +86,18 @@ export function EditProductModal({
       name: product.name,
       description: product.description,
       price: String(product.price),
-      category_id: String(product.category_id),
+      category_id: String(product.category.id),
       brand: product.brand,
     },
   });
 
-  // Resetar formulário quando o produto mudar ou modal abrir
   useEffect(() => {
     if (open) {
       reset({
         name: product.name,
         description: product.description,
         price: String(product.price),
-        category_id: String(product.category_id),
+        category_id: String(product.category.id),
         brand: product.brand,
       });
     }
@@ -229,7 +228,7 @@ export function EditProductModal({
           <div className="space-y-2">
             <Label htmlFor="edit-category">Categoria *</Label>
             <Select
-              defaultValue={String(product.category_id)}
+              defaultValue={String(product.category.id)}
               onValueChange={(value) => setValue("category_id", value, { shouldDirty: true })}
             >
               <SelectTrigger
