@@ -1,15 +1,15 @@
 from database import db
-
+from sqlalchemy import Column, Integer, String, DECIMAL, Text, ForeignKey
 
 class Product(db.Model):
     __tablename__ = "products"
 
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100), nullable=False)
-    description = db.Column(db.Text, nullable=False)
-    price = db.Column(db.Float, nullable=False)
-    brand = db.Column(db.String(50), nullable=False)
-    category_id = db.Column(db.Integer, db.ForeignKey("categories.id"), nullable=False)
+    id = Column(Integer, primary_key=True, nullable=False)
+    name = Column(String(100), nullable=False)
+    description = Column(Text, nullable=False)
+    price = Column(DECIMAL, nullable=False)
+    brand = Column(String(50), nullable=False)
+    category_id = Column(Integer, ForeignKey("categories.id"), nullable=False)
 
     category = db.relationship("Category", back_populates="products")
     sales = db.relationship("Sale", back_populates="product")
