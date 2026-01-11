@@ -39,8 +39,7 @@ export function ImportProductsModal({ open, onOpenChange }: ImportProductsModalP
     resolver: zodResolver(fileFormSchema)
   });
   const {
-    isSubmitting,
-    isSubmitSuccessful
+    isSubmitting
   } = formState;
 
   const files = watch("products");
@@ -56,15 +55,13 @@ export function ImportProductsModal({ open, onOpenChange }: ImportProductsModalP
   }
 
   async function onSubmit({ products }: FileFormSchemaType) {
-    const formData = new FormData()
-    formData.append("file", products[0])
+    const formData = new FormData();
+    formData.append("file", products[0]);
 
     try {
-      const result = await importProducts(formData)
+      const result = await importProducts(formData);
 
-      toast.success("Produtos importados com sucesso!", {
-        description: `${result.imported} produtos foram importados.`,
-      })
+      toast.success("Produtos importados com sucesso!");
 
       reset()
       onOpenChange(false)
