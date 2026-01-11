@@ -39,6 +39,7 @@ import {
 import { Pagination } from "./pagination";
 import { Button } from "./ui/button";
 import { ImportSalesHistoryModal } from "./import-sales-history-modal";
+import { ExportButton } from "./export-button";
 
 interface SalesListProps {
   salesPromise: Promise<SaleResponse>;
@@ -78,7 +79,7 @@ export function SalesList({ salesPromise, productsPromise }: SalesListProps) {
     return product?.brand || "-";
   };
 
-  const totalRevenue = sales.reduce((acc, sale) => acc + sale.total_price, 0);
+  const totalRevenue = sales.reduce((acc, sale) => acc + Number(sale.total_price), 0);
   const totalQuantity = sales.reduce((acc, sale) => acc + sale.quantity, 0);
   const averageOrderValue = sales.length > 0 ? totalRevenue / sales.length : 0;
 
@@ -170,15 +171,20 @@ export function SalesList({ salesPromise, productsPromise }: SalesListProps) {
 
       <Card>
         <CardHeader>
-          <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
-              <ReceiptIcon className="h-5 w-5 text-primary" />
+          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
+                <ReceiptIcon className="h-5 w-5 text-primary" />
+              </div>
+              <div>
+                <CardTitle>Histórico de Vendas</CardTitle>
+                <CardDescription>
+                  Registro de todas as transações realizadas
+                </CardDescription>
+              </div>
             </div>
-            <div>
-              <CardTitle>Histórico de Vendas</CardTitle>
-              <CardDescription>
-                Registro de todas as transações realizadas
-              </CardDescription>
+            <div className="flex items-center gap-2">
+              <ExportButton type="sales" />
             </div>
           </div>
         </CardHeader>
