@@ -2,13 +2,15 @@
 
 import { cacheTag } from "next/cache"
 import { CategoryResponse } from "@/types/category-response"
+import { fetchClient } from "@/lib/fetch-client"
 
-const API_URL = "http://localhost:5000"
 
 export async function getCategoriesService(): Promise<CategoryResponse> {
-  cacheTag("categories")
+  cacheTag("categories");
 
-  const response = await fetch(`${API_URL}/api/categories`)
+  const response = await fetchClient({
+    path: "/api/categories/list"
+  });
 
   if (!response.ok) {
     throw new Error("Falha ao buscar categorias")
