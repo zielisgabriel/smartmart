@@ -8,9 +8,6 @@ export async function importProductsService(formData: FormData) {
     path: "/api/import/products",
     init: {
       body: formData,
-      headers: {
-        "Content-Type": "multipart/form-data"
-      },
       method: "POST"
     },
   });
