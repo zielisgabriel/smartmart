@@ -1,12 +1,12 @@
 from database import db
 from entities.category import Category
-
+from typing_extensions import List
 
 class CategoryRepository:
-    def find_all(self):
+    def find_all(self) -> List[Category]:
         return Category.query.all()
 
-    def find_by_id(self, category_id):
+    def find_by_id(self, category_id) -> Category | None:
         return Category.query.get(category_id)
 
     def create(self, name):
@@ -30,16 +30,3 @@ class CategoryRepository:
         db.session.delete(category)
         db.session.commit()
         return True
-
-    def bulk_create(self, categories_data):
-        try:
-            created = []
-            for data in categories_data:
-                category = Category(name=data["name"])
-                db.session.add(category)
-                created.append(category)
-            db.session.commit()
-            return created
-        except Exception:
-            db.session.rollback()
-            raise
