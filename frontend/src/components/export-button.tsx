@@ -9,12 +9,10 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Download, FileSpreadsheet, Loader2 } from "lucide-react";
-import {
-  exportProductsService,
-  exportSalesService,
-  exportCategoriesService,
-} from "@/services/export-service";
 import { toast } from "sonner";
+import { exportProductsService } from "@/services/products/export-products-service";
+import { exportSalesService } from "@/services/sales/export-sales-service";
+import { exportCategoriesService } from "@/services/categories/export-categories-service";
 
 type ExportType = "products" | "sales" | "categories";
 
@@ -34,15 +32,48 @@ export function ExportButton({ type, showDropdown = false }: ExportButtonProps) 
     try {
       switch (exportType) {
         case "products":
-          await exportProductsService();
+          const productsCsv = await exportProductsService();
+
+          const productsBlob = new Blob([productsCsv], { type: "text/csv" });
+          const productsUrl = window.URL.createObjectURL(productsBlob);
+          const productsLink = document.createElement("a");
+          productsLink.href = productsUrl;
+          productsLink.download = "products.csv";
+          document.body.appendChild(productsLink);
+          productsLink.click();
+          document.body.removeChild(productsLink);
+          window.URL.revokeObjectURL(productsUrl);
+
           toast.success("Produtos exportados com sucesso!");
           break;
         case "sales":
-          await exportSalesService();
+          const salesCsv = await exportSalesService();
+
+          const salesBlob = new Blob([salesCsv], { type: "text/csv" });
+          const salesUrl = window.URL.createObjectURL(salesBlob);
+          const salesLink = document.createElement("a");
+          salesLink.href = salesUrl;
+          salesLink.download = "sales.csv";
+          document.body.appendChild(salesLink);
+          salesLink.click();
+          document.body.removeChild(salesLink);
+          window.URL.revokeObjectURL(salesUrl);
+
           toast.success("Vendas exportadas com sucesso!");
           break;
         case "categories":
-          await exportCategoriesService();
+          const categoriesCsv = await exportCategoriesService();
+
+          const categoriesBlob = new Blob([categoriesCsv], { type: "text/csv" });
+          const categoriesUrl = window.URL.createObjectURL(categoriesBlob);
+          const categoriesLink = document.createElement("a");
+          categoriesLink.href = categoriesUrl;
+          categoriesLink.download = "categories.csv";
+          document.body.appendChild(categoriesLink);
+          categoriesLink.click();
+          document.body.removeChild(categoriesLink);
+          window.URL.revokeObjectURL(categoriesUrl);
+
           toast.success("Categorias exportadas com sucesso!");
           break;
       }
