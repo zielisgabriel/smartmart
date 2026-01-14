@@ -23,7 +23,7 @@ import {
 } from "@/components/ui/tooltip"
 import { Product } from "@/types/product"
 import { Spinner } from "./ui/spinner"
-import { deleteProductService } from "@/services/delete-product-service"
+import { deleteProductService } from "@/services/products/delete-product-service"
 
 interface DeleteProductDialogProps {
   product: Product;
@@ -34,8 +34,8 @@ export function DeleteProductDialog({
   product,
   onProductDeleted,
 }: DeleteProductDialogProps) {
-  const [dialogOpen, setDialogOpen] = useState(false)
-  const [isDeleting, setIsDeleting] = useState(false)
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const handleDelete = async () => {
     setIsDeleting(true)
@@ -43,18 +43,14 @@ export function DeleteProductDialog({
     try {
       await deleteProductService(product.id);
 
-      toast.success("Produto removido com sucesso!", {
-        description: `${product.name} foi removido do catálogo.`,
-      });
+      toast.success("Produto removido com sucesso!");
 
       setDialogOpen(false);
       onProductDeleted?.();
     } catch (error) {
-      toast.error("Erro ao excluir produto", {
-        description: error instanceof Error ? error.message : "Tente novamente.",
-      })
+      toast.error("Erro ao excluir produto");
     } finally {
-      setIsDeleting(false)
+      setIsDeleting(false);
     }
   }
 
