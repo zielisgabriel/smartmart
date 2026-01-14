@@ -36,7 +36,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { TrendingUp, BarChart3, CalendarIcon } from "lucide-react";
-import { MonthlySalesStats } from "@/services/get-sales-service";
+import { MonthlySalesStats } from "@/services/sales/get-monthly-sales-stats-service";
 
 interface SalesDashboardProps {
   monthlyStatsPromise: Promise<MonthlySalesStats[]>;
