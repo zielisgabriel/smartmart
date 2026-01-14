@@ -7,7 +7,6 @@ import { z } from "zod"
 import { Plus, Loader2 } from "lucide-react"
 import { toast } from "sonner"
 
-import { createProduct } from "@/actions/product-actions"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -29,6 +28,7 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Category } from "@/types/category";
+import { createProductService } from "@/services/products/create-product-service"
 
 const productSchema = z.object({
   name: z
@@ -86,7 +86,7 @@ export function AddProductModal({
     setIsSubmitting(true)
 
     try {
-      await createProduct({
+      await createProductService({
         name: data.name,
         description: data.description,
         price: parseFloat(data.price),
@@ -94,19 +94,15 @@ export function AddProductModal({
         category_id: parseInt(data.category_id),
       })
 
-      toast.success("Produto adicionado com sucesso!", {
-        description: `${data.name} foi adicionado ao catálogo.`,
-      })
+      toast.success("Produto adicionado com sucesso!");
 
-      setOpen(false)
-      reset()
-      onProductAdded?.()
+      setOpen(false);
+      reset();
+      onProductAdded?.();
     } catch (error) {
-      toast.error("Erro ao criar produto", {
-        description: error instanceof Error ? error.message : "Tente novamente.",
-      })
+      toast.error("Erro ao criar produto");
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
   }
 
@@ -201,7 +197,10 @@ export function AddProductModal({
 
           <div className="space-y-2">
             <Label htmlFor="category">Categoria *</Label>
-            <Select onValueChange={(value) => setValue("category_id", value)}>
+            <Select
+              onValueChange={(value) => setValue("category_id", value)}
+              disabled={categories.length == 0}
+            >
               <SelectTrigger
                 className={errors.category_id ? "border-destructive" : ""}
               >
