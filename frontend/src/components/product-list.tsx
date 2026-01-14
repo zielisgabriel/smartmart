@@ -32,12 +32,9 @@ import {
   CardHeader,
   CardTitle,
 } from "./ui/card";
-import { SearchProduct } from "./search-product";
-import { Separator } from "./ui/separator";
 import { AddProductModal } from "./add-product-modal";
 import { EditProductModal } from "./edit-product-modal";
 import { DeleteProductDialog } from "./delete-product-dialog";
-import { ProductFilters } from "./product-filters";
 import { ExportButton } from "./export-button";
 
 interface ProductListProps {
@@ -59,11 +56,6 @@ export function ProductList({
       style: "currency",
       currency: "BRL",
     }).format(price);
-  };
-
-  const getCategoryName = (categoryId: number): string => {
-    const category = categories.find((c) => c.id === categoryId);
-    return category?.name || `Categoria ${categoryId}`;
   };
 
   if (totalElements === 0) {
