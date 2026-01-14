@@ -13,6 +13,7 @@ Sistema completo para gerenciamento de produtos, categorias e histórico de vend
 - **psycopg 3.3.2** - Driver PostgreSQL
 - **pandas 2.3.3** - Manipulação de dados CSV
 - **python-dotenv 1.2.1** - Variável de ambiente
+- **gunicorn 23.0.0** - Servidor para produção
 
 ### Frontend
 - **Next.js 16.1.1**
@@ -81,6 +82,11 @@ Sistema completo para gerenciamento de produtos, categorias e histórico de vend
 - `POST /api/import/products` - Importar produtos
 - `POST /api/import/sales` - Importar vendas
 
+### Exportação CSV
+- `POST /api/export/categories` - Exportar categorias
+- `POST /api/export/products` - Exportar produtos
+- `POST /api/export/sales` - Exportar vendas
+
 ## 🚀 Como Executar
 
 ### Pré-requisitos
@@ -88,27 +94,34 @@ Sistema completo para gerenciamento de produtos, categorias e histórico de vend
 - Node.js 20+
 - Docker e Docker Compose
 
-### Backend
+## Iniciar com Docker 🐋
 
 ```bash
-cd backend
+$ docker compose up -d
+```
 
-# Iniciar PostgreSQL
-docker compose up -d
+## Iniciar Manualmente
+### Banco de dados
+**⚠️ Observação:** Para o backend funcionar corretamente é preciso iniciar o banco de dados primeiro, para isso é necessário ter o **Docker** e **Docker** Compose intalados!
+```bash
+$ docker compose up -d smartmart-psql-service
+```
 
-# Criar ambiente virtual
-python -m venv .venv
-source .venv/bin/activate
+### Backend
+```bash
+$ cd backend
 
-# Instalar dependências
-pip install -r requirements.txt
+$ python3 -m venv .
 
-# Configurar variáveis de ambiente
-cp .env-example .env
-# Editar .env com suas credenciais
+$ source .venv/bin/activate
 
-# Executar
-python -m flask --app app run
+$ pip install -r requirements.txt
+
+### Caso queira usar o servidor do Flask (dev):
+$ python3 -m flask --app app run
+
+### Caso queira usar o servidor Gunicorn (stage/prod):
+$ gunicorn --bind 0.0.0.0:5000 app:app
 ```
 
 ### Frontend
@@ -116,11 +129,14 @@ python -m flask --app app run
 ```bash
 cd frontend
 
-# Instalar dependências
 npm install
 
-# Executar em desenvolvimento
+### Caso queira rodar em modo dev
 npm run dev
+
+### Caso queira rodar em modo stage ou prod
+npm run build
+npm run start
 ```
 
 Acesse:
