@@ -3,7 +3,7 @@ import { Dialog, DialogContent, DialogTitle, DialogHeader, DialogFooter, DialogD
 import { CheckCircle2Icon, HistoryIcon, TagIcon, UploadIcon, Loader2 } from "lucide-react"
 import { Button } from "./ui/button"
 import { toast } from "sonner"
-import { importSalesService } from "@/services/import-sales-service"
+import { importSalesService } from "@/services/sales/import-sales-service"
 
 export function ImportSalesHistoryModal({ open, onOpenChange }: { open: boolean; onOpenChange: (open: boolean) => void }) {
   const [isDragging, setIsDragging] = useState(false);
@@ -41,9 +41,7 @@ export function ImportSalesHistoryModal({ open, onOpenChange }: { open: boolean;
       setFile(null);
       onOpenChange(false);
     } catch (error) {
-      toast.error("Erro ao importar vendas", {
-        description: error instanceof Error ? error.message : "Verifique o formato do arquivo.",
-      })
+      toast.error("Erro ao importar vendas");
     } finally {
       setIsSubmitting(false);
     }
