@@ -1,9 +1,9 @@
 import { useCallback, useState } from "react"
 import { Dialog, DialogContent, DialogTitle, DialogHeader, DialogFooter, DialogDescription } from "./ui/dialog"
-import { ChartBarStackedIcon, CheckCircle2Icon, FileDownIcon, HistoryIcon, TagIcon, UploadIcon, Loader2 } from "lucide-react"
+import { ChartBarStackedIcon, CheckCircle2Icon, TagIcon, UploadIcon, Loader2 } from "lucide-react"
 import { Button } from "./ui/button"
 import { toast } from "sonner"
-import { importCategories } from "@/actions/import-actions"
+import { importCategoriesService } from "@/services/categories/import-categories-service"
 
 export function ImportCategoriesModal({ open, onOpenChange }: { open: boolean; onOpenChange: (open: boolean) => void }) {
   const [isDragging, setIsDragging] = useState(false);
@@ -27,21 +27,21 @@ export function ImportCategoriesModal({ open, onOpenChange }: { open: boolean; o
   }, []);
 
   const handleSubmit = async () => {
-    if (!file) return
-    setIsSubmitting(true)
+    if (!file) return;
+    setIsSubmitting(true);
 
-    const formData = new FormData()
-    formData.append("file", file)
+    const formData = new FormData();
+    formData.append("file", file);
 
     try {
-      const result = await importCategories(formData)
+      await importCategoriesService(formData);
 
-      toast.success("Categorias importadas com sucesso!")
+      toast.success("Categorias importadas com sucesso!");
 
-      setFile(null)
-      onOpenChange(false)
+      setFile(null);
+      onOpenChange(false);
     } catch (error) {
-      toast.error("Erro ao importar categorias")
+      toast.error("Erro ao importar categorias");
     } finally {
       setIsSubmitting(false)
     }
