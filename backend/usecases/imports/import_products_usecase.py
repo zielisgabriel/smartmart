@@ -11,8 +11,8 @@ class ImportProductsUsecase(ImportModel):
             "name": str,
             "description": str,
             "price": Decimal,
-            "brand": str,
-            "category_id": int
+            "category_id": int,
+            "brand": str
         })
 
     def execute(self, file):
