@@ -7,7 +7,6 @@ import { z } from "zod"
 import { Pencil, Loader2 } from "lucide-react"
 import { toast } from "sonner"
 
-import { updateProduct } from "@/actions/product-actions"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -36,6 +35,7 @@ import {
 } from "@/components/ui/tooltip"
 import { Category } from "@/types/category"
 import { Product } from "@/types/product"
+import { updateProductService } from "@/services/products/update-product-service"
 
 const productSchema = z.object({
   name: z
@@ -107,25 +107,21 @@ export function EditProductModal({
     setIsSubmitting(true)
 
     try {
-      await updateProduct({
+      await updateProductService({
         id: product.id,
         name: data.name,
         description: data.description,
         price: parseFloat(data.price),
         category_id: parseInt(data.category_id),
         brand: data.brand,
-      })
+      });
 
-      toast.success("Produto atualizado com sucesso!", {
-        description: `${data.name} foi atualizado.`,
-      })
+      toast.success("Produto atualizado com sucesso!");
 
       setOpen(false)
       onProductUpdated?.()
     } catch (error) {
-      toast.error("Erro ao atualizar produto", {
-        description: error instanceof Error ? error.message : "Tente novamente.",
-      })
+      toast.error("Erro ao atualizar produto");
     } finally {
       setIsSubmitting(false)
     }
