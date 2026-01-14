@@ -7,7 +7,7 @@ import { toast } from "sonner"
 import { Spinner } from "./ui/spinner"
 import z from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { importProducts } from "@/actions/import-actions"
+import { importProductsService } from "@/services/products/import-products-service"
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024
 
@@ -59,16 +59,14 @@ export function ImportProductsModal({ open, onOpenChange }: ImportProductsModalP
     formData.append("file", products[0]);
 
     try {
-      const result = await importProducts(formData);
+      await importProductsService(formData);
 
       toast.success("Produtos importados com sucesso!");
 
-      reset()
-      onOpenChange(false)
+      reset();
+      onOpenChange(false);
     } catch (error) {
-      toast.error("Erro ao importar produtos", {
-        description: error instanceof Error ? error.message : "Verifique o formato do arquivo.",
-      })
+      toast.error("Erro ao importar produtos");
     }
   }
 
