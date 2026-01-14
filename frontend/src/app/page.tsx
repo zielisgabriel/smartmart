@@ -1,7 +1,7 @@
 import { ProductList } from "@/components/product-list"
 import { ProductListSkeleton } from "@/components/product-list-skeleton"
-import { getCategoriesService } from "@/services/get-categories-service"
-import { getProductsService } from "@/services/get-products-service"
+import { getCategoriesService } from "@/services/categories/get-categories-service"
+import { getProductsService } from "@/services/products/get-products-service"
 import { Suspense } from "react"
 
 interface ProductsPageProps {
