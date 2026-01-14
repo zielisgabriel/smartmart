@@ -1,0 +1,62 @@
+services:
+  smartmart-frontend-service:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        - API_URL=http://smartmart-backend-service:5000
+    container_name: smartmart-frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - API_URL=http://smartmart-backend-service:5000
+    networks:
+      - smartmart-network
+    depends_on:
+      - smartmart-backend-service
+
+  smartmart-backend-service:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: smartmart-backend
+    ports:
+      - "5000:5000"
+    environment:
+      - DATABASE_USER=smartmart
+      - DATABASE_PASSWORD=smartmart
+      - DATABASE_DB=smartmart
+      - DATABASE_HOST=smartmart-psql-service
+      - DATABASE_PORT=5432
+    networks:
+      - smartmart-network
+    depends_on:
+      smartmart-psql-service:
+        condition: service_healthy
+
+  smartmart-psql-service:
+    image: postgres:17
+    container_name: smartmart-psql
+    ports:
+      - "5433:5432"
+    environment:
+      - POSTGRES_USER=smartmart
+      - POSTGRES_PASSWORD=smartmart
+      - POSTGRES_DB=smartmart
+    networks:
+      - smartmart-network
+    healthcheck:
+      test: pg_isready -U smartmart -d smartmart
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+
+networks:
+  smartmart-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
