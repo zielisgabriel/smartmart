@@ -1,11 +1,12 @@
 import { SalesList } from "@/components/sales-list"
 import { SalesListSkeleton } from "@/components/sales-list-skeleton"
 import { SalesDashboard } from "@/components/sales-dashboard"
-import { getProductsService } from "@/services/get-products-service"
-import { getSalesService, getMonthlySalesStatsService } from "@/services/get-sales-service"
+import { getProductsService } from "@/services/products/get-products-service"
+import { getSalesService } from "@/services/sales/get-sales-service"
 import { Suspense } from "react"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { BarChart3, List } from "lucide-react"
+import { getMonthlySalesStatsService } from "@/services/sales/get-monthly-sales-stats-service"
 
 interface SalesPageProps {
   searchParams: Promise<{ page?: string; year?: string }>
