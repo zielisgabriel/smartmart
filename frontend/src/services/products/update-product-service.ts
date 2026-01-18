@@ -17,7 +17,10 @@ export async function updateProductService(data: UpdateProductData) {
     path: `/api/products/update/${data.id}`,
     init: {
       body: JSON.stringify(data),
-      method: "PUT"
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json"
+      }
     }
   });
 
