@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { Dialog, DialogContent, DialogTitle, DialogHeader, DialogFooter, DialogDescription } from "./ui/dialog"
-import { CheckCircle2Icon, FileSpreadsheetIcon, ShoppingBasketIcon, Trash2Icon, UploadIcon } from "lucide-react"
+import { CheckCircle2Icon, ShoppingBasketIcon, TagIcon, Trash2Icon, UploadIcon } from "lucide-react"
 import { Button } from "./ui/button"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
@@ -9,7 +9,7 @@ import z from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { importProductsService } from "@/services/products/import-products-service"
 
-const MAX_FILE_SIZE = 10 * 1024 * 1024
+const MAX_FILE_SIZE = 10 * 1024 * 1024;
 
 const fileFormSchema = z.object({
   products: z
@@ -74,10 +74,8 @@ export function ImportProductsModal({ open, onOpenChange }: ImportProductsModalP
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-xl">
         <DialogHeader>
-          <div className="flex items-center gap-3">
-            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500 to-emerald-600 shadow-lg shadow-emerald-500/25">
-              <ShoppingBasketIcon className="h-6 w-6 text-white" />
-            </div>
+          <div className="flex items-center gap-2">
+              <ShoppingBasketIcon className="h-12 w-12 rounded-xl p-2 text-white bg-gradient-to-br from-emerald-500 to-emerald-600 shadow-lg shadow-emerald-500/25" />
             <div>
               <DialogTitle className="text-xl font-semibold">Importar Produtos</DialogTitle>
               <DialogDescription className="text-sm text-muted-foreground">
@@ -112,7 +110,11 @@ export function ImportProductsModal({ open, onOpenChange }: ImportProductsModalP
                       {(selectedFile.size / 1024).toFixed(2)} KB
                     </p>
                   </div>
-                  <Button variant="destructive" size="sm" onClick={() => reset({ products: undefined })}>
+                  <Button
+                    variant="destructive"
+                    size="sm"
+                    onClick={() => reset({ products: undefined })}
+                  >
                     <Trash2Icon />
                     Remover arquivo
                   </Button>
@@ -137,8 +139,8 @@ export function ImportProductsModal({ open, onOpenChange }: ImportProductsModalP
             </div>
 
             <div className="rounded-lg bg-muted/50 p-4">
-              <div className="flex items-start gap-3">
-                <FileSpreadsheetIcon className="h-5 w-5 text-muted-foreground mt-0.5" />
+              <div className="flex items-start gap-2">
+                <TagIcon className="text-muted-foreground" />
                 <div className="space-y-1">
                   <p className="text-sm font-medium">Formato esperado</p>
                   <p className="text-xs text-muted-foreground">
