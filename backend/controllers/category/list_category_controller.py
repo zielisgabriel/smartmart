@@ -1,7 +1,6 @@
 from usecases.category.list_category_usecase import ListCategoryUsecase
 from flask import jsonify
 
-
 class ListCategoryController:
     def __init__(self):
         self.usecase = ListCategoryUsecase()
