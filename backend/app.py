@@ -1,5 +1,4 @@
 from flask import Flask
-from flask_cors import CORS
 from config import Config
 from database import db
 from routes.category_routes import category_routes
@@ -7,14 +6,16 @@ from routes.product_routes import product_routes
 from routes.sale_routes import sale_routes
 from routes.import_routes import import_routes
 from routes.export_routes import export_routes
+from exceptions.error_handling import register_error_handlers
 
 
 def create_app():
     app = Flask(__name__)
     app.config.from_object(Config)
 
-    CORS(app)
     db.init_app(app)
+
+    register_error_handlers(app)
 
     app.register_blueprint(category_routes, url_prefix="/api/categories")
     app.register_blueprint(product_routes, url_prefix="/api/products")
