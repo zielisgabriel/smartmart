@@ -1,6 +1,6 @@
 from flask import Blueprint
 from controllers.category.list_category_controller import ListCategoryController
-from controllers.category.get_category_controller import GetCategoryController
+from controllers.category.get_category_by_id_controller import GetCategoryByIdController
 from controllers.category.create_category_controller import CreateCategoryController
 from controllers.category.update_category_controller import UpdateCategoryController
 from controllers.category.delete_category_controller import DeleteCategoryController
@@ -8,7 +8,7 @@ from controllers.category.delete_category_controller import DeleteCategoryContro
 category_routes = Blueprint("categories", __name__)
 
 listCategoryController = ListCategoryController()
-getCategoryController = GetCategoryController()
+getCategoryController = GetCategoryByIdController()
 createCategoryController = CreateCategoryController()
 updateCategoryController = UpdateCategoryController()
 deleteCategoryController = DeleteCategoryController()
