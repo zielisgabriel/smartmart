@@ -2,7 +2,7 @@ from usecases.imports.import_model import ImportModel
 import pandas as pd
 from database import db
 from decimal import Decimal
-
+from exceptions.required_action_exception import RequiredActionException
 
 class ImportProductsUsecase(ImportModel):
     def __init__(self):
@@ -42,7 +42,7 @@ class ImportProductsUsecase(ImportModel):
             if 'unique constraint' in str(e).lower():
                 raise ValueError("Erro de duplicação: Alguns IDs do arquivo já existem no banco de dados.")
             if 'foreign key' in str(e).lower() or 'integrity' in str(e).lower():
-                raise ValueError("Erro de integridade: Verifique se todas as categorias referenciadas existem.")
+                raise RequiredActionException(description="É necessário ter as categorias importadas!", action=["CATEGORY_IMPORT_REQUIRED"])
             raise e
 
         return len(df)
