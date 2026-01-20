@@ -1,9 +1,6 @@
 "use client"
 
-import { useState } from "react"
-import { useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { z } from "zod"
+import { useActionState, useEffect, useState } from "react"
 import { Plus, Loader2 } from "lucide-react"
 import { toast } from "sonner"
 
@@ -28,30 +25,7 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Category } from "@/types/category";
-import { createProductService } from "@/services/products/create-product-service"
-
-const productSchema = z.object({
-  name: z
-    .string()
-    .min(3, "Nome deve ter pelo menos 3 caracteres")
-    .max(100, "Nome deve ter no máximo 100 caracteres"),
-  description: z
-    .string()
-    .min(10, "Descrição deve ter pelo menos 10 caracteres")
-    .max(500, "Descrição deve ter no máximo 500 caracteres"),
-  price: z
-    .string()
-    .refine((val) => !isNaN(parseFloat(val)) && parseFloat(val) > 0, {
-      message: "Preço deve ser um número positivo",
-    }),
-  category_id: z.string().min(1, "Selecione uma categoria"),
-  brand: z
-    .string()
-    .min(2, "Marca deve ter pelo menos 2 caracteres")
-    .max(50, "Marca deve ter no máximo 50 caracteres"),
-});
-
-type ProductFormData = z.infer<typeof productSchema>;
+import { createProductAction } from "@/actions/create-product-action"
 
 interface AddProductModalProps {
   categories: Category[];
@@ -62,59 +36,32 @@ export function AddProductModal({
   categories,
   onProductAdded,
 }: AddProductModalProps) {
+  const [state, formAction, pending] = useActionState(createProductAction, null);
   const [open, setOpen] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const {
-    register,
-    handleSubmit,
-    setValue,
-    reset,
-    formState: { errors },
-  } = useForm<ProductFormData>({
-    resolver: zodResolver(productSchema),
-    defaultValues: {
-      name: "",
-      description: "",
-      price: "",
-      category_id: "",
-      brand: "",
-    },
-  });
+  const fieldErrors = state?.errors?.reduce((acc: Record<string, string>, issue: any) => {
+    if (issue.path?.[0]) {
+      acc[issue.path[0]] = issue.message;
+    }
+    return acc;
+  }, {} as Record<string, string>) ?? {};
 
-  const onSubmit = async (data: ProductFormData) => {
-    setIsSubmitting(true)
+  const getFieldValue = (field: string) => state?.payload?.get(field)?.toString() ?? "";
 
-    try {
-      await createProductService({
-        name: data.name,
-        description: data.description,
-        price: parseFloat(data.price),
-        brand: data.brand,
-        category_id: parseInt(data.category_id),
-      })
+  useEffect(() => {
+    if (!state) return;
 
-      toast.success("Produto adicionado com sucesso!");
-
+    if (state.status === "SUCCESS") {
+      toast.success(state.message);
       setOpen(false);
-      reset();
       onProductAdded?.();
-    } catch (error) {
-      toast.error("Erro ao criar produto");
-    } finally {
-      setIsSubmitting(false);
+    } else if (state.status === "ERROR" && !state.errors) {
+      toast.error(state.message);
     }
-  }
-
-  const handleOpenChange = (isOpen: boolean) => {
-    setOpen(isOpen);
-    if (!isOpen) {
-      reset();
-    }
-  };
+  }, [state, onProductAdded]);
 
   return (
-    <Dialog open={open} onOpenChange={handleOpenChange}>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button className="gap-2">
           <Plus className="h-4 w-4" />
@@ -130,17 +77,18 @@ export function AddProductModal({
           </DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+        <form action={formAction} className="space-y-4" key={state?.timestamp}>
           <div className="space-y-2">
             <Label htmlFor="name">Nome do Produto *</Label>
             <Input
               id="name"
               placeholder="Ex: Arroz Branco Tipo 1"
-              {...register("name")}
-              className={errors.name ? "border-destructive" : ""}
+              name="name"
+              defaultValue={getFieldValue("name")}
+              className={fieldErrors.name ? "border-destructive" : ""}
             />
-            {errors.name && (
-              <p className="text-sm text-destructive">{errors.name.message}</p>
+            {fieldErrors.name && (
+              <p className="text-sm text-destructive">{fieldErrors.name}</p>
             )}
           </div>
 
@@ -150,12 +98,13 @@ export function AddProductModal({
               id="description"
               placeholder="Descreva o produto detalhadamente..."
               rows={3}
-              {...register("description")}
-              className={errors.description ? "border-destructive" : ""}
+              name="description"
+              defaultValue={getFieldValue("description")}
+              className={fieldErrors.description ? "border-destructive" : ""}
             />
-            {errors.description && (
+            {fieldErrors.description && (
               <p className="text-sm text-destructive">
-                {errors.description.message}
+                {fieldErrors.description}
               </p>
             )}
           </div>
@@ -169,12 +118,13 @@ export function AddProductModal({
                 step="0.01"
                 min="0"
                 placeholder="0.00"
-                {...register("price")}
-                className={errors.price ? "border-destructive" : ""}
+                name="price"
+                defaultValue={getFieldValue("price")}
+                className={fieldErrors.price ? "border-destructive" : ""}
               />
-              {errors.price && (
+              {fieldErrors.price && (
                 <p className="text-sm text-destructive">
-                  {errors.price.message}
+                  {fieldErrors.price}
                 </p>
               )}
             </div>
@@ -184,12 +134,13 @@ export function AddProductModal({
               <Input
                 id="brand"
                 placeholder="Ex: Tio João"
-                {...register("brand")}
-                className={errors.brand ? "border-destructive" : ""}
+                name="brand"
+                defaultValue={getFieldValue("brand")}
+                className={fieldErrors.brand ? "border-destructive" : ""}
               />
-              {errors.brand && (
+              {fieldErrors.brand && (
                 <p className="text-sm text-destructive">
-                  {errors.brand.message}
+                  {fieldErrors.brand}
                 </p>
               )}
             </div>
@@ -198,11 +149,12 @@ export function AddProductModal({
           <div className="space-y-2">
             <Label htmlFor="category">Categoria *</Label>
             <Select
-              onValueChange={(value) => setValue("category_id", value)}
+              name="category_id"
+              defaultValue={getFieldValue("category_id")}
               disabled={categories.length == 0}
             >
               <SelectTrigger
-                className={errors.category_id ? "border-destructive" : ""}
+                className={fieldErrors.category_id ? "border-destructive" : ""}
               >
                 <SelectValue placeholder="Selecione uma categoria" />
               </SelectTrigger>
@@ -214,24 +166,20 @@ export function AddProductModal({
                 ))}
               </SelectContent>
             </Select>
-            {errors.category_id && (
+            {fieldErrors.category_id && (
               <p className="text-sm text-destructive">
-                {errors.category_id.message}
+                {fieldErrors.category_id}
               </p>
             )}
           </div>
 
           <DialogFooter className="pt-4">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => setOpen(false)}
-              disabled={isSubmitting}
-            >
+            <Button type="button" variant="outline" onClick={() => setOpen(false)}>
               Cancelar
             </Button>
-            <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? (
+
+            <Button type="submit" disabled={pending}>
+              {pending ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   Salvando...
