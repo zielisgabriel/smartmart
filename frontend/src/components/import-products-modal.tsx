@@ -1,28 +1,11 @@
-import { useActionState, useEffect, useState, useTransition } from "react"
+import { useActionState, useEffect, useState } from "react"
 import { Dialog, DialogContent, DialogTitle, DialogHeader, DialogFooter, DialogDescription } from "./ui/dialog"
 import { CheckCircle2Icon, ShoppingBasketIcon, TagIcon, Trash2Icon, UploadIcon } from "lucide-react"
 import { Button } from "./ui/button"
-import { useForm } from "react-hook-form"
-import { toast } from "sonner"
 import { Spinner } from "./ui/spinner"
-import z from "zod"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { importProductsService } from "@/services/products/import-products-service"
-import { RequiredActionException } from "@/exceptions/required-action-exception"
-import { ActionType, INITIAL_TYPE } from "@/types/action-type"
 import { ImportCategoriesAlert } from "./import-categories-alert"
-
-const MAX_FILE_SIZE = 10 * 1024 * 1024;
-
-const fileFormSchema = z.object({
-  products: z
-    .custom<FileList>()
-    .refine((files) => files?.length > 0, "O arquivo é obrigatório.")
-    .refine((files) => files?.[0]?.size <= MAX_FILE_SIZE, "Máximo de 10MB.")
-    .refine((files) => files?.[0]?.name.endsWith(".csv"), "Apenas .csv permitido.")
-});
-
-type FileFormSchemaType = z.infer<typeof fileFormSchema>;
+import { importProductsAction } from "@/actions/import-products-action"
+import { toast } from "sonner"
 
 interface ImportProductsModalProps {
   open: boolean,
@@ -30,63 +13,43 @@ interface ImportProductsModalProps {
 }
 
 export function ImportProductsModal({ open, onOpenChange }: ImportProductsModalProps) {
-  const [state, formAction, isPending] = useActionState(importProductsService, INITIAL_TYPE);
-  const [_, startTransition] = useTransition();
+  const [state, formAction, pending] = useActionState(importProductsAction, null);
   const [isImportCategoriesAlertOpen, setIsImportCategoriesAlertOpen] = useState<boolean>(false);
   const [isDragging, setIsDragging] = useState(false);
-  const {
-    register,
-    watch,
-    handleSubmit,
-    setValue,
-    reset
-  } = useForm({
-    resolver: zodResolver(fileFormSchema)
-  });
-
-  const files = watch("products");
-  const selectedFile = files?.item(0);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
   function handleDrop(e: React.DragEvent<HTMLDivElement>) {
     e.preventDefault();
     setIsDragging(false);
     
-    if (e.dataTransfer?.files) {
-      setValue("products", e.dataTransfer.files, { shouldValidate: true });
+    const droppedFile = e.dataTransfer.files.item(0);
+    if (droppedFile) {
+      setSelectedFile(droppedFile);
     }
   }
 
-  async function onSubmit({ products }: FileFormSchemaType) {
-    const formData = new FormData();
-    formData.append("file", products[0]);
-
-    startTransition(() => {
-      formAction(formData);
-    });
+  function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.item(0);
+    if (file) {
+      setSelectedFile(file);
+    }
   }
 
   useEffect(() => {
-    if (state.timestamp === 0) return;
+    if (!state) return;
 
     if (state.status === "SUCCESS") {
       toast.success(state.message);
       onOpenChange(false);
-      reset();
+      setSelectedFile(null);
     } else if (state.status === "ERROR") {
       if (state.actions?.includes("CATEGORY_IMPORT_REQUIRED")) {
         setIsImportCategoriesAlertOpen(true);
-
-        // toast.error(`Atenção: ${state.message}`, {
-        //   action: {
-        //     label: "Resolver Categorias",
-        //     onClick: () => console.log("Redirecionar para categorias...")
-        //   }
-        // });
       } else {
         toast.error(state.message);
       }
     }
-  }, [state, onOpenChange, reset]);
+  }, [state, onOpenChange]);
 
   return (
     <>
@@ -104,10 +67,15 @@ export function ImportProductsModal({ open, onOpenChange }: ImportProductsModalP
             </div>
           </DialogHeader>
 
-          <form onSubmit={handleSubmit(onSubmit)}>
+          <form action={(formData) => {
+            if (selectedFile) {
+              formData.set("file", selectedFile);
+            }
+            formAction(formData);
+          }}>
             <div className="space-y-6 py-4">
               <div
-                onDragOver={() => setIsDragging(true)}
+                onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
                 onDragLeave={() => setIsDragging(false)}
                 onDrop={handleDrop}
                 className={`relative flex flex-col items-center justify-center rounded-xl border-2 border-dashed p-8 transition-all duration-200 ${
@@ -130,9 +98,10 @@ export function ImportProductsModal({ open, onOpenChange }: ImportProductsModalP
                       </p>
                     </div>
                     <Button
+                      type="button"
                       variant="destructive"
                       size="sm"
-                      onClick={() => reset({ products: undefined })}
+                      onClick={() => setSelectedFile(null)}
                     >
                       <Trash2Icon />
                       Remover arquivo
@@ -148,9 +117,10 @@ export function ImportProductsModal({ open, onOpenChange }: ImportProductsModalP
                       <p className="mt-1 text-sm text-muted-foreground">ou clique para selecionar</p>
                     </div>
                     <input
-                      {...register("products")}
                       type="file"
+                      name="file"
                       accept=".csv"
+                      onChange={handleFileChange}
                       className="absolute inset-0 cursor-pointer opacity-0"
                     />
                   </>
@@ -171,15 +141,15 @@ export function ImportProductsModal({ open, onOpenChange }: ImportProductsModalP
             </div>
 
             <DialogFooter className="gap-2">
-              <Button variant="outline" onClick={() => onOpenChange(false)}>
+              <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
                 Cancelar
               </Button>
               <Button
-                disabled={!selectedFile || isPending}
+                disabled={!selectedFile || pending}
                 className="bg-emerald-600 hover:bg-emerald-700"
                 type="submit"
               >
-                {isPending ? <Spinner /> : <UploadIcon className="h-4 w-4" />}
+                {pending ? <Spinner /> : <UploadIcon className="h-4 w-4" />}
                 Importar Produtos
               </Button>
             </DialogFooter>
