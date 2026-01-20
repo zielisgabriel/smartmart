@@ -8,46 +8,46 @@ import z from "zod";
 const productSchema = z.object({
   name: z
     .string()
-    .min(3, "Nome deve ter pelo menos 3 caracteres")
-    .max(100, "Nome deve ter no máximo 100 caracteres"),
+    .min(3, {error: "Nome deve ter pelo menos 3 caracteres"})
+    .max(100, {error: "Nome deve ter no máximo 100 caracteres"}),
   description: z
     .string()
-    .min(10, "Descrição deve ter pelo menos 10 caracteres")
-    .max(500, "Descrição deve ter no máximo 500 caracteres"),
+    .min(10, {error: "Descrição deve ter pelo menos 10 caracteres"})
+    .max(500, {error: "Descrição deve ter no máximo 500 caracteres"}),
   price: z
     .string()
     .refine((val) => !isNaN(parseFloat(val)) && parseFloat(val) > 0, {
-      message: "Preço deve ser um número positivo",
+      error: "Preço deve ser um número positivo",
     }),
-  category_id: z.string().min(1, "Selecione uma categoria"),
+  category_id: z.string().min(1, {error: "Selecione uma categoria"}),
   brand: z
     .string()
-    .min(2, "Marca deve ter pelo menos 2 caracteres")
-    .max(50, "Marca deve ter no máximo 50 caracteres"),
+    .min(2, {error: "Marca deve ter pelo menos 2 caracteres"})
+    .max(50, {error: "Marca deve ter no máximo 50 caracteres"}),
 });
 
-type ProductSchemaType = z.infer<typeof productSchema>;
-
-export async function createProductAction(_: unknown, formData: FormData): Promise<ActionType<FormData>> {
-  const data: ProductSchemaType = {
+export async function createProductAction(_: unknown, formData: FormData): Promise<ActionType<FormData>> {  
+  const result = productSchema.safeParse({
     name: formData.get("name") as string,
     description: formData.get("description") as string,
     price: formData.get("price") as string,
     category_id: formData.get("category_id") as string,
     brand: formData.get("brand") as string
-  }
+  });
 
-  const schemaValidation = productSchema.safeParse(data);
+  if (!result.success) {
+    console.log("createProductAction | Error Issues:", z.treeifyError(result.error).properties);
 
-  if (!schemaValidation.success) {
     return {
       status: "ERROR",
       message: "Erro de validação",
-      errors: schemaValidation.error.issues,
+      errors: z.treeifyError(result.error).properties,
       timestamp: Date.now(),
       payload: formData
     }
   }
+
+  const { data } = result;
 
   try {
     await createProductService({
