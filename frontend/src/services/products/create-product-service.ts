@@ -3,7 +3,7 @@
 import { fetchClient } from "@/lib/fetch-client"
 import { revalidateTag } from "next/cache"
 
-interface CreateProductData {
+export interface CreateProductData {
   name: string
   description: string
   price: number
@@ -16,7 +16,10 @@ export async function createProductService(data: CreateProductData) {
     path: "/api/products/create",
     init: {
       method: "POST",
-      body: JSON.stringify(data)
+      body: JSON.stringify(data),
+      headers: {
+        "Content-Type": "application/json"
+      }
     }
   });
 
@@ -26,5 +29,5 @@ export async function createProductService(data: CreateProductData) {
 
   revalidateTag("products", { expire: 0 });
 
-  return response.json()
+  return await response.json()
 }
