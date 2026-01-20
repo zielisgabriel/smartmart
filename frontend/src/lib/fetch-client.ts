@@ -1,5 +1,6 @@
 "use server";
 
+import { BadRequestException } from "@/exceptions/bad-request-exception";
 import { HttpException } from "@/exceptions/http-exception";
 import { RequiredActionException } from "@/exceptions/required-action-exception";
 
@@ -20,7 +21,7 @@ export async function fetchClient({ path, host, init }: FetchClientProps) {
     return response;
   }
 
-  let errorData;
+  let errorData: any;
   try {
     errorData = await response.json();
   } catch (error) {
@@ -30,8 +31,12 @@ export async function fetchClient({ path, host, init }: FetchClientProps) {
   switch (response.status) {
     case 409:
       verifyRequiredAction(await errorData);
+    case 400:
+      throw new BadRequestException(errorData.description, errorData.name);
+    case 500:
+      throw new HttpException(500, "Internal Error", "Erro interno.");
     default:
-      throw new HttpException(500, "Internal Error", "Internal Error");
+      throw new HttpException(500, "Internal Error", "Erro totalmente desconhecido.");
   }
 }
 
