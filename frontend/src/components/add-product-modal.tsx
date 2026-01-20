@@ -26,6 +26,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { Category } from "@/types/category";
 import { createProductAction } from "@/actions/create-product-action"
+import clsx from "clsx"
 
 interface AddProductModalProps {
   categories: Category[];
@@ -38,14 +39,7 @@ export function AddProductModal({
 }: AddProductModalProps) {
   const [state, formAction, pending] = useActionState(createProductAction, null);
   const [open, setOpen] = useState(false);
-
-  const fieldErrors = state?.errors?.reduce((acc: Record<string, string>, issue: any) => {
-    if (issue.path?.[0]) {
-      acc[issue.path[0]] = issue.message;
-    }
-    return acc;
-  }, {} as Record<string, string>) ?? {};
-
+  
   const getFieldValue = (field: string) => state?.payload?.get(field)?.toString() ?? "";
 
   useEffect(() => {
@@ -85,10 +79,10 @@ export function AddProductModal({
               placeholder="Ex: Arroz Branco Tipo 1"
               name="name"
               defaultValue={getFieldValue("name")}
-              className={fieldErrors.name ? "border-destructive" : ""}
+              className={clsx(state?.errors.name && "border-destructive")}
             />
-            {fieldErrors.name && (
-              <p className="text-sm text-destructive">{fieldErrors.name}</p>
+            {state?.errors.name && (
+              <p className="text-sm text-destructive">{state?.errors.name.errors[0]}</p>
             )}
           </div>
 
@@ -100,12 +94,10 @@ export function AddProductModal({
               rows={3}
               name="description"
               defaultValue={getFieldValue("description")}
-              className={fieldErrors.description ? "border-destructive" : ""}
+              className={clsx(state?.errors.description && "border-destructive")}
             />
-            {fieldErrors.description && (
-              <p className="text-sm text-destructive">
-                {fieldErrors.description}
-              </p>
+            {state?.errors.description && (
+              <p className="text-sm text-destructive">{state?.errors.description.errors[0]}</p>
             )}
           </div>
 
@@ -120,12 +112,10 @@ export function AddProductModal({
                 placeholder="0.00"
                 name="price"
                 defaultValue={getFieldValue("price")}
-                className={fieldErrors.price ? "border-destructive" : ""}
+                className={clsx(state?.errors.price && "border-destructive")}
               />
-              {fieldErrors.price && (
-                <p className="text-sm text-destructive">
-                  {fieldErrors.price}
-                </p>
+              {state?.errors.price && (
+                <p className="text-sm text-destructive">{state?.errors.price.errors[0]}</p>
               )}
             </div>
 
@@ -136,12 +126,10 @@ export function AddProductModal({
                 placeholder="Ex: Tio João"
                 name="brand"
                 defaultValue={getFieldValue("brand")}
-                className={fieldErrors.brand ? "border-destructive" : ""}
+                className={clsx(state?.errors.brand && "border-destructive")}
               />
-              {fieldErrors.brand && (
-                <p className="text-sm text-destructive">
-                  {fieldErrors.brand}
-                </p>
+              {state?.errors.brand && (
+                <p className="text-sm text-destructive">{state?.errors.brand.errors[0]}</p>
               )}
             </div>
           </div>
@@ -154,7 +142,7 @@ export function AddProductModal({
               disabled={categories.length == 0}
             >
               <SelectTrigger
-                className={fieldErrors.category_id ? "border-destructive" : ""}
+                className={clsx(state?.errors.category_id && "border-destructive")}
               >
                 <SelectValue placeholder="Selecione uma categoria" />
               </SelectTrigger>
@@ -166,10 +154,8 @@ export function AddProductModal({
                 ))}
               </SelectContent>
             </Select>
-            {fieldErrors.category_id && (
-              <p className="text-sm text-destructive">
-                {fieldErrors.category_id}
-              </p>
+            {state?.errors.category_id && (
+              <p className="text-sm text-destructive">{state?.errors.category_id.errors[0]}</p>
             )}
           </div>
 
