@@ -1,7 +1,7 @@
 from flask import jsonify, request
 from usecases.imports.import_products_usecase import ImportProductsUsecase
 from io import StringIO
-
+from exceptions.bad_request_exception import BadRequestException
 
 class ImportProductsController:
     def __init__(self):
@@ -9,11 +9,11 @@ class ImportProductsController:
 
     def importProducts(self):
         if "file" not in request.files:
-            return jsonify({"error": "Nenhum arquivo enviado"}), 400
+            raise BadRequestException("Nenhum arquivo enviado")
 
         file = request.files["file"]
         if not file.filename or not file.filename.endswith(".csv"):
-            return jsonify({"error": "Apenas arquivos .csv são permitidos"}), 400
+            raise BadRequestException("Apenas arquivos .csv são permitidos")
 
         content = file.read().decode("utf-8")
         count = self.usecase.execute(StringIO(content))
