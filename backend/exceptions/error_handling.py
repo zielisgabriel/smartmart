@@ -11,6 +11,7 @@ def register_error_handlers(app: Flask):
         "name": e.name,
         "description": e.description,
     })
+    response.status_code = e.code or 500
     response.content_type = "application/json"
     return response
   
