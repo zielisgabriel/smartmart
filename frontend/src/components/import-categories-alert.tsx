@@ -6,12 +6,12 @@ import { useState } from "react";
 
 interface ImportCategoriesAlertProps {
   open: boolean;
-  onOpenChange: (open: boolean) => void
+  onOpenChange: (open: boolean) => void,
 }
 
 export function ImportCategoriesAlert({ open, onOpenChange }: ImportCategoriesAlertProps) {
   const [isImportCategoriesModalOpen, setIsImportCategoriesModalOpen] = useState<boolean>(false);
-
+  
   return (
     <>
       <AlertDialog open={open} onOpenChange={onOpenChange}>
@@ -29,10 +29,9 @@ export function ImportCategoriesAlert({ open, onOpenChange }: ImportCategoriesAl
             <AlertDialogCancel>
               Cancelar
             </AlertDialogCancel>
-            <AlertDialogAction onClick={() => {
-              onOpenChange(false)
-              setIsImportCategoriesModalOpen(true)
-            }}>
+            <AlertDialogAction
+              onClick={() => setIsImportCategoriesModalOpen(true)}
+            >
               <ImportIcon />
               Importar categorias
             </AlertDialogAction>
@@ -40,7 +39,10 @@ export function ImportCategoriesAlert({ open, onOpenChange }: ImportCategoriesAl
         </AlertDialogContent>
       </AlertDialog>
 
-      <ImportCategoriesModal open={isImportCategoriesModalOpen} onOpenChange={open => !open && setIsImportCategoriesModalOpen(false)} />
+      <ImportCategoriesModal
+        open={isImportCategoriesModalOpen}
+        onOpenChange={open => !open && setIsImportCategoriesModalOpen(false)}
+      />
     </>
   );
 }
