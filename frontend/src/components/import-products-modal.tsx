@@ -6,6 +6,7 @@ import { Spinner } from "./ui/spinner"
 import { ImportCategoriesAlert } from "./import-categories-alert"
 import { importProductsAction } from "@/actions/import-products-action"
 import { toast } from "sonner"
+import { ImportCategoriesModal } from "./import-categories-modal"
 
 interface ImportProductsModalProps {
   open: boolean,
@@ -49,7 +50,7 @@ export function ImportProductsModal({ open, onOpenChange }: ImportProductsModalP
         toast.error(state.message);
       }
     }
-  }, [state, onOpenChange]);
+  }, [state]);
 
   return (
     <>
@@ -157,7 +158,10 @@ export function ImportProductsModal({ open, onOpenChange }: ImportProductsModalP
         </DialogContent>
       </Dialog>
 
-      <ImportCategoriesAlert open={isImportCategoriesAlertOpen} onOpenChange={open => !open && setIsImportCategoriesAlertOpen(false)} />
+      <ImportCategoriesAlert
+        open={isImportCategoriesAlertOpen}
+        onOpenChange={open => !open && setIsImportCategoriesAlertOpen(false)}
+      />
     </>
   );
 }
