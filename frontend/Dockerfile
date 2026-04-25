@@ -8,17 +8,19 @@ WORKDIR /app
 COPY package.json .
 COPY package-lock.json .
 
-RUN npm install;
+RUN npm install
 
 FROM base AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
+RUN test -f public || mkdir public
+
 ARG API_URL=http://smartmart-backend-service:5000
 ENV API_URL=${API_URL}
 
-RUN npm run build;
+RUN npm run build
 
 FROM base AS runner
 WORKDIR /app
